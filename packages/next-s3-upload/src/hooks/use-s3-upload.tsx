@@ -4,6 +4,7 @@ import { forwardRef } from 'react';
 import {
   CompleteMultipartUploadCommandOutput,
   S3Client,
+  S3ClientConfig,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 
@@ -120,14 +121,20 @@ export const useS3Upload: UseS3Upload = (options = {}) => {
       console.error(data.error);
       throw data.error;
     } else {
-      let client = new S3Client({
+      const clientConfig: S3ClientConfig = {
         credentials: {
           accessKeyId: data.token.Credentials.AccessKeyId,
           secretAccessKey: data.token.Credentials.SecretAccessKey,
           sessionToken: data.token.Credentials.SessionToken,
         },
         region: data.region,
-      });
+      }
+
+      if (data?.s3Endpoint) {
+        clientConfig.endpoint = data.s3Endpoint
+      }
+
+      let client = new S3Client(clientConfig);
 
       let params = {
         Bucket: data.bucket,

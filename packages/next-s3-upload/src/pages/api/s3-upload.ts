@@ -63,12 +63,18 @@ let makeRouteHandler = (options: Options = {}): Handler => {
       let token = await sts.send(command);
       res.statusCode = 200;
 
-      res.status(200).json({
+      const response: any = {
         token,
         key,
         bucket,
         region: process.env.S3_UPLOAD_REGION,
-      });
+      }
+
+      if (process.env.S3_UPLOAD_S3_ENDPOINT) {
+        response.s3Endpoint = process.env.S3_UPLOAD_S3_ENDPOINT
+      }
+
+      res.status(200).json(response);
     }
   };
 
